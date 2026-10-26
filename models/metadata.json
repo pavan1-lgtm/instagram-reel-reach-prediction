@@ -1,0 +1,152 @@
+{
+  "project_title": "Instagram Reel Reach Prediction",
+  "data_source": "synthetic",
+  "training_date": "2026-10-26 10:50:58",
+  "total_records_trained": 3189,
+  "test_records": 798,
+  "metrics": {
+    "linear_regression": {
+      "test_mae": 3235.0,
+      "test_rmse": 6942.9,
+      "test_r2": 0.8946
+    },
+    "gradient_boosting": {
+      "test_mae": 3037.4,
+      "test_rmse": 7257.0,
+      "test_r2": 0.8848
+    },
+    "naive_baseline": {
+      "test_mae": 4402.7,
+      "test_r2": 0.7813
+    }
+  },
+  "prediction_interval": {
+    "confidence_level": "80%",
+    "ratio_p10": 0.6489,
+    "ratio_p90": 1.3912,
+    "test_coverage_pct": 79.9
+  },
+  "vif_top": [
+    {
+      "Feature": "average_previous_reach",
+      "VIF": 7.0
+    },
+    {
+      "Feature": "followers",
+      "VIF": 6.7
+    },
+    {
+      "Feature": "content_category_Entertainment",
+      "VIF": 1.93
+    },
+    {
+      "Feature": "content_category_Technology",
+      "VIF": 1.78
+    },
+    {
+      "Feature": "posting_day_Saturday",
+      "VIF": 1.71
+    }
+  ],
+  "top_coefficients": [
+    {
+      "feature": "average_previous_reach",
+      "label": "Average Previous Reach",
+      "coefficient": 20369.71,
+      "meaning": "Historical average reach (strongest baseline anchor for expected reach)"
+    },
+    {
+      "feature": "posting_time_category_Evening",
+      "label": "Evening",
+      "coefficient": 1680.32,
+      "meaning": "Scheduling in evening peak window (17:00-21:00) vs morning"
+    },
+    {
+      "feature": "content_category_Entertainment",
+      "label": "Entertainment",
+      "coefficient": 1463.28,
+      "meaning": "Entertainment category content vs reference niche"
+    },
+    {
+      "feature": "followers",
+      "label": "Followers",
+      "coefficient": -1241.18,
+      "meaning": "Follower volume (holding reach and engagement constant)"
+    },
+    {
+      "feature": "posting_day_Sunday",
+      "label": "Sunday",
+      "coefficient": 1226.68,
+      "meaning": "Publishing on Sunday vs reference weekday"
+    }
+  ],
+  "allowed_categories": [
+    "Entertainment",
+    "Technology",
+    "Fitness",
+    "Education",
+    "Gaming"
+  ],
+  "allowed_days": [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday"
+  ],
+  "default_example": {
+    "followers": 12500,
+    "average_previous_reach": 8200,
+    "average_engagement_rate": 5.8,
+    "account_age_days": 450,
+    "posts_last_30_days": 16,
+    "reel_duration": 24.0,
+    "caption_length": 85,
+    "hashtag_count": 6,
+    "content_category": "Education",
+    "posting_hour": 19,
+    "posting_day": "Saturday",
+    "has_trending_audio": 1,
+    "is_original_content": 1
+  },
+  "field_ranges": {
+    "followers": {
+      "min": 1,
+      "max": 10000000
+    },
+    "average_previous_reach": {
+      "min": 1,
+      "max": 10000000
+    },
+    "average_engagement_rate": {
+      "min": 0.0,
+      "max": 100.0
+    },
+    "account_age_days": {
+      "min": 1,
+      "max": 10000
+    },
+    "posts_last_30_days": {
+      "min": 0,
+      "max": 120
+    },
+    "reel_duration": {
+      "min": 1.0,
+      "max": 90.0
+    },
+    "caption_length": {
+      "min": 0,
+      "max": 2200
+    },
+    "hashtag_count": {
+      "min": 0,
+      "max": 30
+    },
+    "posting_hour": {
+      "min": 0,
+      "max": 23
+    }
+  }
+}

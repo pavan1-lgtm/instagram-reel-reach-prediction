@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reel Reach Predictor | Machine Learning Estimation</title>
+  <meta name="description" content="Supervised machine learning tool for estimating Instagram Reel reach prior to publication with empirical 80% confidence ranges.">
+  <link rel="stylesheet" href="/static/css/glass.css">
+</head>
+<body>
+  <!-- Layered Chromatic Background Canvas (4 GPU-accelerated drifting gradient orbs) -->
+  <div class="orb-canvas" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Semantic Header Landmark -->
+    <header class="header-glass">
+      <div class="brand-block">
+        <h1>Reel Reach Predictor</h1>
+        <p>Pre-posting reach estimation using Ordinary Least Squares linear regression</p>
+      </div>
+      <div class="header-actions">
+        <!-- Dynamic badge rendered via JS from metadata.json (NOT hardcoded) -->
+        <div id="data-source-badge" class="synthetic-badge" style="display: none;" role="status">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span id="data-source-text">Demo Model</span>
+        </div>
+        <button id="btn-load-example" type="button" class="btn-secondary" title="Fill form with typical educational creator numbers">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Load Example
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Application Landmark -->
+    <main class="main-grid">
+      <!-- Left Column: Input Forms -->
+      <div class="cards-column">
+        <form id="prediction-form" novalidate>
+          <!-- Card 1: Account Characteristics -->
+          <section class="glass-card" aria-labelledby="card-account-heading">
+            <h2 id="card-account-heading" class="card-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Account Characteristics (Known Baseline)
+            </h2>
+            <div class="form-grid">
+              <div class="form-group" id="group-followers">
+                <label for="input-followers">
+                  Followers <span class="field-hint">(>= 1)</span>
+                </label>
+                <input type="number" id="input-followers" name="followers" min="1" max="100000000" required placeholder="e.g. 15,000">
+                <span class="field-error-msg" id="err-followers"></span>
+              </div>
+
+              <div class="form-group" id="group-avg-reach">
+                <label for="input-avg-reach">
+                  Average Previous Reach <span class="field-hint">(Baseline)</span>
+                </label>
+                <input type="number" id="input-avg-reach" name="average_previous_reach" min="1" max="100000000" required placeholder="e.g. 6,500">
+                <span class="field-error-msg" id="err-average_previous_reach"></span>
+              </div>
+
+              <div class="form-group" id="group-engagement">
+                <label for="input-engagement">
+                  Average Engagement Rate (%) <span class="field-hint">(0 - 100)</span>
+                </label>
+                <input type="number" id="input-engagement" name="average_engagement_rate" min="0" max="100" step="0.1" required placeholder="e.g. 4.2">
+                <span class="field-error-msg" id="err-average_engagement_rate"></span>
+              </div>
+
+              <div class="form-group" id="group-posts-30d">
+                <label for="input-posts-30d">
+                  Posts in Last 30 Days <span class="field-hint">(Cadence)</span>
+                </label>
+                <input type="number" id="input-posts-30d" name="posts_last_30_days" min="0" max="300" required placeholder="e.g. 12">
+                <span class="field-error-msg" id="err-posts_last_30_days"></span>
+              </div>
+
+              <div class="form-group form-full" id="group-account-age">
+                <label for="input-account-age">
+                  Account Age (Days) <span class="field-hint">(Tenure)</span>
+                </label>
+                <input type="number" id="input-account-age" name="account_age_days" min="1" max="30000" required placeholder="e.g. 400">
+                <span class="field-error-msg" id="err-account_age_days"></span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Card 2: Planned Reel Characteristics -->
+          <section class="glass-card" style="margin-top: 24px;" aria-labelledby="card-reel-heading">
+            <h2 id="card-reel-heading" class="card-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+              Planned Reel Characteristics (Pre-Posting Only)
+            </h2>
+            <div class="form-grid">
+              <div class="form-group" id="group-duration">
+                <label for="input-duration">
+                  Duration (Seconds) <span class="field-hint">(1 - 90s)</span>
+                </label>
+                <input type="number" id="input-duration" name="reel_duration" min="1" max="90" step="0.5" required placeholder="e.g. 24.0">
+                <span class="field-error-msg" id="err-reel_duration"></span>
+              </div>
+
+              <div class="form-group" id="group-category">
+                <label for="select-category">
+                  Content Category <span class="field-hint">(Niche)</span>
+                </label>
+                <select id="select-category" name="content_category" required>
+                  <option value="Education">Education</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Fitness">Fitness</option>
+                  <option value="Gaming">Gaming</option>
+                  <option value="Technology">Technology</option>
+                </select>
+                <span class="field-error-msg" id="err-content_category"></span>
+              </div>
+
+              <div class="form-group" id="group-day">
+                <label for="select-day">
+                  Planned Posting Day <span class="field-hint">(Day)</span>
+                </label>
+                <select id="select-day" name="posting_day" required>
+                  <option value="Monday">Monday</option>
+                  <option value="Tuesday">Tuesday</option>
+                  <option value="Wednesday">Wednesday</option>
+                  <option value="Thursday">Thursday</option>
+                  <option value="Friday">Friday</option>
+                  <option value="Saturday">Saturday</option>
+                  <option value="Sunday">Sunday</option>
+                </select>
+                <span class="field-error-msg" id="err-posting_day"></span>
+              </div>
+
+              <div class="form-group" id="group-hashtags">
+                <label for="input-hashtags">
+                  Hashtag Count <span class="field-hint">(0 - 30)</span>
+                </label>
+                <input type="number" id="input-hashtags" name="hashtag_count" min="0" max="30" required placeholder="e.g. 6">
+                <span class="field-error-msg" id="err-hashtag_count"></span>
+              </div>
+
+              <div class="form-group form-full" id="group-caption">
+                <label for="input-caption">
+                  Caption Character Count <span class="field-hint">(0 - 2,200 chars)</span>
+                </label>
+                <input type="number" id="input-caption" name="caption_length" min="0" max="2200" required placeholder="e.g. 140">
+                <span class="field-error-msg" id="err-caption_length"></span>
+              </div>
+
+              <!-- Posting Hour Slider with Live AM/PM Label -->
+              <div class="form-group form-full" id="group-hour">
+                <div class="slider-header">
+                  <label for="range-posting-hour">
+                    Planned Posting Hour <span class="field-hint">(24-Hour Slider)</span>
+                  </label>
+                  <span id="hour-display" class="slider-val-badge">19:00 (7 PM)</span>
+                </div>
+                <input type="range" id="range-posting-hour" name="posting_hour" min="0" max="23" value="19" step="1">
+                <span class="field-error-msg" id="err-posting_hour"></span>
+              </div>
+
+              <!-- Segmented Toggles (No plain checkboxes) -->
+              <div class="form-group" id="group-audio">
+                <label id="label-audio">Has Trending Audio?</label>
+                <div class="segmented-toggle" role="radiogroup" aria-labelledby="label-audio">
+                  <button type="button" id="btn-audio-no" class="active" data-val="0">No</button>
+                  <button type="button" id="btn-audio-yes" data-val="1">Yes</button>
+                </div>
+                <input type="hidden" id="input-audio" name="has_trending_audio" value="0">
+              </div>
+
+              <div class="form-group" id="group-original">
+                <label id="label-original">Is Original Content?</label>
+                <div class="segmented-toggle" role="radiogroup" aria-labelledby="label-original">
+                  <button type="button" id="btn-orig-no" data-val="0">No</button>
+                  <button type="button" id="btn-orig-yes" class="active" data-val="1">Yes</button>
+                </div>
+                <input type="hidden" id="input-original" name="is_original_content" value="1">
+              </div>
+
+              <!-- Predict Submit Button -->
+              <div class="form-full" style="margin-top: 10px;">
+                <button type="submit" id="btn-submit" class="btn-predict">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  Predict Expected Reach
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <!-- Card 3: Top Influential Pre-Posting Signals -->
+        <section class="glass-card" aria-labelledby="card-weights-heading">
+          <h2 id="card-weights-heading" class="card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            What the Model Weights Most (Across Training Data)
+          </h2>
+          <div id="coef-container" class="coef-list">
+            <!-- Rendered dynamically from /api/model-info -->
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Sticky Result Panel -->
+      <aside class="sticky-panel">
+        <section class="glass-card" aria-labelledby="card-result-heading" aria-live="polite">
+          <h2 id="card-result-heading" class="card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+            Estimated Reach
+          </h2>
+
+          <div class="result-card-inner">
+            <!-- 1. EMPTY STATE -->
+            <div id="state-empty" class="state-empty">
+              <div class="empty-icon">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+              </div>
+              <h3>Ready to Calculate</h3>
+              <p>Configure your planned Reel characteristics and press <strong>Predict Expected Reach</strong>. The model will estimate reach and calibrate an empirical 80% confidence interval.</p>
+            </div>
+
+            <!-- 2. LOADING STATE (Shimmer Skeleton) -->
+            <div id="state-loading" class="state-loading" style="display: none;">
+              <div class="skeleton-box skeleton-pill"></div>
+              <div class="skeleton-box skeleton-number"></div>
+              <div class="skeleton-box skeleton-pill" style="width: 60%;"></div>
+              <div class="skeleton-box skeleton-bar" style="margin: 10px 0;"></div>
+              <div class="skeleton-box skeleton-chip"></div>
+              <div class="skeleton-box skeleton-chip"></div>
+            </div>
+
+            <!-- 3. SUCCESS RESULT STATE -->
+            <div id="state-success" class="state-success" style="display: none;">
+              <div class="estimate-header">
+                <span class="estimate-tag">Point Estimate (Expected Reach)</span>
+                <div id="result-reach-number" class="reach-number">0</div>
+                <div id="result-range-text" class="range-caption">expected range 0 – 0</div>
+                <div id="result-benchmark" class="pct-benchmark">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  <span id="benchmark-text">+0% vs. your historical average</span>
+                </div>
+              </div>
+
+              <!-- Empirical 80% Horizontal Range Bar -->
+              <div class="range-bar-component">
+                <div class="range-labels">
+                  <span id="bar-label-low">Low</span>
+                  <span id="bar-label-mid">Point Estimate</span>
+                  <span id="bar-label-high">High</span>
+                </div>
+                <div class="range-track">
+                  <div id="range-fill" class="range-fill-segment"></div>
+                  <div id="range-pin" class="range-pin-marker" title="Point Estimate"></div>
+                </div>
+              </div>
+
+              <!-- Actionable Suggestions -->
+              <div>
+                <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">
+                  Improvement Opportunities
+                </h3>
+                <div id="suggestions-container" class="suggestions-list">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. ERROR STATE -->
+            <div id="state-error" style="display: none; background: var(--status-error-bg); border: 1px solid var(--status-error); border-radius: 12px; padding: 14px; color: #fecaca; font-size: 0.86rem;">
+              <strong>Unable to generate prediction.</strong>
+              <p id="error-message-text" style="margin-top: 4px;">Please review the highlighted fields above.</p>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <!-- Semantic Footer Landmark -->
+    <footer class="footer-glass">
+      Estimate based on historical patterns. Not Instagram's algorithm. Actual reach depends on many factors not captured here.
+    </footer>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
