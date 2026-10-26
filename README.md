@@ -1,5 +1,7 @@
 # Instagram Reel Reach Prediction Before Posting Using Machine Learning
 
+[![CI Pipeline](https://github.com/pavan1-lgtm/instagram-reel-reach-prediction/actions/workflows/ci.yml/badge.svg)](https://github.com/pavan1-lgtm/instagram-reel-reach-prediction/actions/workflows/ci.yml)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/pavan1-lgtm/instagram-reel-reach-prediction)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688.svg)](https://fastapi.tiangolo.com/)
 [![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.3%2B-orange.svg)](https://scikit-learn.org/)
@@ -7,6 +9,20 @@
 [![Dataset](https://img.shields.io/badge/Data-Synthetic%20Benchmark-amber.svg)]()
 
 > **Project Mandate:** Estimate an Instagram Reel's expected reach and empirical confidence range using **only features known prior to publication**.
+
+---
+
+## ⚡ Run Instantly in GitHub (1-Click in Browser)
+
+You do **not** need to install Python or Git on your computer to run this project. You can run the complete web app directly in GitHub using **GitHub Codespaces**:
+
+1. Click here: [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/pavan1-lgtm/instagram-reel-reach-prediction)
+2. Wait ~30 seconds while GitHub creates your cloud development environment and automatically installs all dependencies.
+3. In the terminal at the bottom of Codespaces, run:
+   ```bash
+   uvicorn app.main:app --port 8000
+   ```
+4. A popup will appear in the bottom right: **"Open in Browser"**. Click it to view and interact with the live glassmorphism application!
 
 ---
 
