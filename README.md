@@ -23,6 +23,12 @@ You do **not** need to install Python or Git on your computer to run this projec
    ```
 4. A popup will appear in the bottom right: **"Open in Browser"**. Click it to view and interact with the live glassmorphism application!
 
+### 🌐 Localhost Quick Access
+When running the application locally, click any link below to open:
+- 🚀 **Live Web App:** [http://localhost:8000](http://localhost:8000) *(or [http://127.0.0.1:8000](http://127.0.0.1:8000))*
+- 📖 **Interactive API Documentation (Swagger UI):** [http://localhost:8000/docs](http://localhost:8000/docs)
+- 🔍 **Model Metadata Endpoint:** [http://localhost:8000/api/meta](http://localhost:8000/api/meta)
+
 ---
 
 ## 1. Problem Statement & Motivation
@@ -181,7 +187,7 @@ pytest -v
 ```bash
 uvicorn app.main:app --reload
 ```
-Open **`http://127.0.0.1:8000`** in any modern web browser.
+Open in your browser: **[http://localhost:8000](http://localhost:8000)** *(or [http://127.0.0.1:8000](http://127.0.0.1:8000))*
 
 ---
 
