@@ -1,6 +1,5 @@
 # Instagram Reel Reach Prediction Before Posting Using Machine Learning
 
-[![CI Pipeline](https://github.com/pavan1-lgtm/instagram-reel-reach-prediction/actions/workflows/ci.yml/badge.svg)](https://github.com/pavan1-lgtm/instagram-reel-reach-prediction/actions/workflows/ci.yml)
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/pavan1-lgtm/instagram-reel-reach-prediction)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688.svg)](https://fastapi.tiangolo.com/)
